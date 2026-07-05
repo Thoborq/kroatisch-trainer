@@ -1,0 +1,63 @@
+import type { Vocabulary } from '../types';
+
+const D = '2026-07-05';
+const w = (id: string, croatian: string, german: string, cat: string, type: Vocabulary['type'] = 'Nomen'): Vocabulary => ({
+  id, croatian, german, category: cat, type,
+  status: 'new', favorite: false, difficulty: 3, createdAt: D, updatedAt: D,
+});
+
+export const zeitVocab: Vocabulary[] = [
+  // Zeit & Datum
+  w('zt001', 'jutro', 'Morgen', 'Zeit & Datum'),
+  w('zt002', 'noć', 'Nacht', 'Zeit & Datum'),
+  w('zt003', 'popodne', 'Nachmittag', 'Zeit & Datum'),
+  w('zt004', 'dan', 'Tag', 'Zeit & Datum'),
+  w('zt005', 'tjedan', 'Woche', 'Zeit & Datum'),
+  w('zt006', 'mjesec', 'Monat', 'Zeit & Datum'),
+  w('zt007', 'godina', 'Jahr', 'Zeit & Datum'),
+  w('zt008', 'vikend', 'Wochenende', 'Zeit & Datum'),
+  w('zt009', 'podne', 'Mittag', 'Zeit & Datum'),
+  w('zt010', 'ponoć', 'Mitternacht', 'Zeit & Datum'),
+  w('zt011', 'danas', 'heute', 'Zeit & Datum', 'Sonstiges'),
+  w('zt012', 'sutra', 'morgen', 'Zeit & Datum', 'Sonstiges'),
+  w('zt013', 'jučer', 'gestern', 'Zeit & Datum', 'Sonstiges'),
+  w('zt014', 'trenutno', 'gerade', 'Zeit & Datum', 'Sonstiges'),
+  w('zt015', 'uskoro', 'bald', 'Zeit & Datum', 'Sonstiges'),
+  w('zt016', 'često', 'oft', 'Zeit & Datum', 'Sonstiges'),
+  w('zt017', 'ponekad', 'manchmal', 'Zeit & Datum', 'Sonstiges'),
+  w('zt018', 'uvijek', 'immer', 'Zeit & Datum', 'Sonstiges'),
+  w('zt019', 'nikada', 'niemals', 'Zeit & Datum', 'Sonstiges'),
+  w('zt020', 'rano', 'früh', 'Zeit & Datum', 'Sonstiges'),
+  w('zt021', 'kasno', 'spät', 'Zeit & Datum', 'Sonstiges'),
+  w('zt022', 'vrijeme', 'Zeit', 'Zeit & Datum'),
+  w('zt023', 'prošlost', 'Vergangenheit', 'Zeit & Datum'),
+  w('zt024', 'sadašnjost', 'Gegenwart', 'Zeit & Datum'),
+  w('zt025', 'budućnost', 'Zukunft', 'Zeit & Datum'),
+  w('zt026', 'večer', 'Abend', 'Zeit & Datum'),
+  w('zt027', 'sat', 'Stunde / Uhr', 'Zeit & Datum'),
+  w('zt028', 'minuta', 'Minute', 'Zeit & Datum'),
+  w('zt029', 'sekunda', 'Sekunde', 'Zeit & Datum'),
+  w('zt030', 'prekosutra', 'übermorgen', 'Zeit & Datum', 'Sonstiges'),
+  w('zt031', 'prekjučer', 'vorgestern', 'Zeit & Datum', 'Sonstiges'),
+  // Wochentage
+  w('wd001', 'ponedjeljak', 'Montag', 'Wochentage'),
+  w('wd002', 'utorak', 'Dienstag', 'Wochentage'),
+  w('wd003', 'srijeda', 'Mittwoch', 'Wochentage'),
+  w('wd004', 'četvrtak', 'Donnerstag', 'Wochentage'),
+  w('wd005', 'petak', 'Freitag', 'Wochentage'),
+  w('wd006', 'subota', 'Samstag', 'Wochentage'),
+  w('wd007', 'nedjelja', 'Sonntag', 'Wochentage'),
+  // Monate
+  w('mo001', 'siječanj', 'Januar', 'Monate'),
+  w('mo002', 'veljača', 'Februar', 'Monate'),
+  w('mo003', 'ožujak', 'März', 'Monate'),
+  w('mo004', 'travanj', 'April', 'Monate'),
+  w('mo005', 'svibanj', 'Mai', 'Monate'),
+  w('mo006', 'lipanj', 'Juni', 'Monate'),
+  w('mo007', 'srpanj', 'Juli', 'Monate'),
+  w('mo008', 'kolovoz', 'August', 'Monate'),
+  w('mo009', 'rujan', 'September', 'Monate'),
+  w('mo010', 'listopad', 'Oktober', 'Monate'),
+  w('mo011', 'studeni', 'November', 'Monate'),
+  w('mo012', 'prosinac', 'Dezember', 'Monate'),
+];
