@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import type { Vocabulary } from '@/src/types';
+import { useSpeak } from '@/src/hooks/useSpeak';
 
 export interface FlashCardProps {
   vocab: Vocabulary;
@@ -31,6 +32,15 @@ const TYPE_COLORS: Record<string, string> = {
   Sonstiges: 'bg-zinc-100/80 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400',
 };
 
+// Speaker icon SVG
+function SpeakerIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} style={{ width: size, height: size }}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
+    </svg>
+  );
+}
+
 export function FlashCard({
   vocab,
   showGermanFirst = false,
@@ -46,6 +56,9 @@ export function FlashCard({
   const [flipped, setFlipped] = useState(false);
   const [dragX, setDragX] = useState(0);
   const [exitDir, setExitDir] = useState<'left' | 'right' | null>(null);
+  const [noVoiceMsg, setNoVoiceMsg] = useState(false);
+
+  const { speak, available: voiceAvailable, checked: voiceChecked } = useSpeak();
 
   const drag = useRef({ active: false, startX: 0, moved: false });
   const currentDX = useRef(0);
@@ -53,7 +66,6 @@ export function FlashCard({
 
   useEffect(() => { exitDirRef.current = exitDir; }, [exitDir]);
 
-  // Reset on new card
   useEffect(() => {
     setFlipped(false);
     setDragX(0);
@@ -63,7 +75,6 @@ export function FlashCard({
     currentDX.current = 0;
   }, [vocab.id]);
 
-  // Execute action after exit animation
   useEffect(() => {
     if (!exitDir) return;
     const t = setTimeout(() => {
@@ -99,7 +110,6 @@ export function FlashCard({
     }
   }, []);
 
-  // Global mouse events (desktop support)
   useEffect(() => {
     const mm = (e: MouseEvent) => onMove(e.clientX);
     const mu = () => onEnd();
@@ -116,14 +126,22 @@ export function FlashCard({
     setFlipped((f) => !f);
   };
 
-  // Transform values
+  const handleSpeak = useCallback((text: string, e: React.MouseEvent | React.TouchEvent) => {
+    e.stopPropagation();
+    if (!voiceAvailable) {
+      setNoVoiceMsg(true);
+      setTimeout(() => setNoVoiceMsg(false), 2800);
+      return;
+    }
+    speak(text);
+  }, [voiceAvailable, speak]);
+
   const tx = exitDir === 'right' ? 520 : exitDir === 'left' ? -520 : dragX;
   const rot = exitDir === 'right' ? 22 : exitDir === 'left' ? -22 : dragX * 0.055;
 
   const dragTransition = exitDir
     ? 'transform 0.27s ease-in, opacity 0.27s ease-in'
-    : drag.current.active
-    ? 'none'
+    : drag.current.active ? 'none'
     : 'transform 0.32s cubic-bezier(0.34,1.56,0.64,1)';
 
   const flipTransition = drag.current.active
@@ -172,9 +190,20 @@ export function FlashCard({
         </div>
       </div>
 
+      {/* No-voice message toast */}
+      {noVoiceMsg && (
+        <div className="w-full max-w-sm">
+          <div className="flex items-center gap-2 bg-zinc-800 dark:bg-zinc-700 text-white text-xs px-4 py-2.5 rounded-2xl shadow-lg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 shrink-0 text-zinc-300">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+            </svg>
+            Kroatische Stimme auf diesem Gerät nicht verfügbar
+          </div>
+        </div>
+      )}
+
       {/* Card */}
       <div className="w-full max-w-sm" style={{ perspective: '1200px' }}>
-        {/* Drag layer */}
         <div
           style={{
             transform: `translateX(${tx}px) rotate(${rot}deg)`,
@@ -189,7 +218,6 @@ export function FlashCard({
           onMouseDown={(e) => onStart(e.clientX)}
           onClick={handleClick}
         >
-          {/* Flip layer */}
           <div
             style={{
               transformStyle: 'preserve-3d',
@@ -246,17 +274,37 @@ export function FlashCard({
                 <div className="relative w-full grid grid-cols-2 gap-x-3 bg-zinc-50 dark:bg-zinc-700/40 rounded-2xl p-3.5">
                   <div className="space-y-3">
                     {L_KEYS.map((key, i) => (
-                      <div key={key}>
-                        <p className="text-[10px] text-zinc-400 dark:text-zinc-500 leading-none mb-0.5">{L_LABELS[i]}</p>
-                        <p className="text-[12px] font-medium text-zinc-800 dark:text-zinc-100 leading-snug">{vocab.forms![key]}</p>
+                      <div key={key} className="flex items-start gap-1.5">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] text-zinc-400 dark:text-zinc-500 leading-none mb-0.5">{L_LABELS[i]}</p>
+                          <p className="text-[12px] font-medium text-zinc-800 dark:text-zinc-100 leading-snug">{vocab.forms![key]}</p>
+                        </div>
+                        {voiceAvailable && (
+                          <button
+                            onClick={(e) => handleSpeak(vocab.forms![key], e)}
+                            className="shrink-0 mt-1 text-zinc-300 dark:text-zinc-600 active:scale-90 active:text-blue-500 transition-all"
+                          >
+                            <SpeakerIcon size={12} />
+                          </button>
+                        )}
                       </div>
                     ))}
                   </div>
                   <div className="space-y-3">
                     {R_KEYS.map((key, i) => (
-                      <div key={key}>
-                        <p className="text-[10px] text-zinc-400 dark:text-zinc-500 leading-none mb-0.5">{R_LABELS[i]}</p>
-                        <p className="text-[12px] font-medium text-zinc-800 dark:text-zinc-100 leading-snug">{vocab.forms![key]}</p>
+                      <div key={key} className="flex items-start gap-1.5">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] text-zinc-400 dark:text-zinc-500 leading-none mb-0.5">{R_LABELS[i]}</p>
+                          <p className="text-[12px] font-medium text-zinc-800 dark:text-zinc-100 leading-snug">{vocab.forms![key]}</p>
+                        </div>
+                        {voiceAvailable && (
+                          <button
+                            onClick={(e) => handleSpeak(vocab.forms![key], e)}
+                            className="shrink-0 mt-1 text-zinc-300 dark:text-zinc-600 active:scale-90 active:text-blue-500 transition-all"
+                          >
+                            <SpeakerIcon size={12} />
+                          </button>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -271,7 +319,7 @@ export function FlashCard({
         </div>
       </div>
 
-      {/* Footer: favorite + hint */}
+      {/* Footer: favorite | hint | speak */}
       <div className="w-full max-w-sm flex items-center justify-between px-1">
         {onFavorite ? (
           <button
@@ -289,8 +337,23 @@ export function FlashCard({
             </svg>
           </button>
         ) : <div className="w-10" />}
+
         <p className="text-[11px] text-zinc-400 dark:text-zinc-600">wischen zum Bewerten</p>
-        <div className="w-10" />
+
+        {/* Speak button — always shown after voice check */}
+        {voiceChecked ? (
+          <button
+            onClick={(e) => handleSpeak(vocab.croatian, e)}
+            className={`p-2 -m-2 transition-all active:scale-90 ${
+              voiceAvailable
+                ? 'text-blue-500 dark:text-blue-400'
+                : 'text-zinc-300 dark:text-zinc-700'
+            }`}
+            title={voiceAvailable ? 'Aussprache' : 'Kroatische Stimme nicht verfügbar'}
+          >
+            <SpeakerIcon size={22} />
+          </button>
+        ) : <div className="w-10" />}
       </div>
     </div>
   );
