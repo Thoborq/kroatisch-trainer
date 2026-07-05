@@ -15,9 +15,10 @@ export default function FavoritenPage() {
   const statusColors: Record<string, string> = {
     new: 'bg-zinc-100 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400',
     learning: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
+    known: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
     mastered: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
   };
-  const statusLabels: Record<string, string> = { new: 'Neu', learning: 'Üben', mastered: 'Gelernt' };
+  const statusLabels: Record<string, string> = { new: 'Neu', learning: 'Üben', known: 'Kann ich', mastered: 'Perfekt' };
 
   if (!loaded) {
     return <div className="flex items-center justify-center h-screen text-zinc-400">Lädt…</div>;
@@ -81,9 +82,8 @@ export default function FavoritenPage() {
             <FlashCard
               vocab={currentCard}
               showGermanFirst={showGermanFirst}
-              onKnow={() => { setStatus(currentCard.id, 'mastered'); setCardIndex((i) => i + 1); }}
+              onKnow={() => { setStatus(currentCard.id, 'known'); setCardIndex((i) => i + 1); }}
               onLearn={() => { setStatus(currentCard.id, 'learning'); setCardIndex((i) => i + 1); }}
-              onSkip={() => setCardIndex((i) => i + 1)}
               onFavorite={() => toggleFavorite(currentCard.id)}
               isFavorite={currentCard.favorite}
               current={cardIndex + 1}

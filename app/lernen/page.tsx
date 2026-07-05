@@ -27,7 +27,6 @@ export default function LernenPage() {
   );
 
   const current = newCards[sessionIndex];
-
   const advance = useCallback(() => setSessionIndex((i) => i + 1), []);
 
   const handleKnow = useCallback(() => {
@@ -53,12 +52,13 @@ export default function LernenPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="flex items-center justify-between px-4 pt-12 pb-2">
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Lernen</h1>
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 pt-14 pb-2">
+        <h1 className="text-[22px] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">Lernen</h1>
         <div className="flex items-center gap-2">
           <Link
             href="/suche"
-            className="p-2 rounded-full bg-white dark:bg-zinc-800 shadow-sm text-zinc-600 dark:text-zinc-400 active:scale-95 transition-transform"
+            className="p-2 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 active:scale-95 transition-transform"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
@@ -66,58 +66,54 @@ export default function LernenPage() {
           </Link>
           <button
             onClick={() => setShowGermanFirst((v) => !v)}
-            className="px-3 py-1.5 rounded-full bg-white dark:bg-zinc-800 shadow-sm text-sm font-medium text-zinc-700 dark:text-zinc-300 active:scale-95 transition-transform"
+            className="px-3 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-sm font-medium text-zinc-700 dark:text-zinc-300 active:scale-95 transition-transform"
           >
             {showGermanFirst ? '🇩🇪 → 🇭🇷' : '🇭🇷 → 🇩🇪'}
           </button>
         </div>
       </div>
 
-      {/* Stats bar */}
-      <div className="flex gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
-        <div className="shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-xs text-zinc-600 dark:text-zinc-400">
-          <span className="w-2 h-2 rounded-full bg-zinc-400"></span>
-          {stats.newCount} Neu
-        </div>
-        <div className="shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-900/20 text-xs text-amber-600 dark:text-amber-400">
-          <span className="w-2 h-2 rounded-full bg-amber-400"></span>
-          {stats.learning} Üben
-        </div>
-        <div className="shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-xs text-blue-600 dark:text-blue-400">
-          <span className="w-2 h-2 rounded-full bg-blue-400"></span>
-          {stats.known} Kann ich
-        </div>
-        <div className="shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-xs text-green-600 dark:text-green-400">
-          <span className="w-2 h-2 rounded-full bg-green-400"></span>
-          {stats.mastered} Perfekt
-        </div>
+      {/* Stats chips */}
+      <div className="flex gap-2 px-5 pb-4 overflow-x-auto no-scrollbar">
+        {[
+          { label: `${stats.newCount} Neu`, color: 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400', dot: 'bg-zinc-400' },
+          { label: `${stats.learning} Üben`, color: 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400', dot: 'bg-amber-400' },
+          { label: `${stats.known} Kann ich`, color: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400', dot: 'bg-blue-400' },
+          { label: `${stats.mastered} Perfekt`, color: 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400', dot: 'bg-green-400' },
+        ].map(({ label, color, dot }) => (
+          <div key={label} className={`shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${color}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
+            {label}
+          </div>
+        ))}
       </div>
 
+      {/* Card area */}
       <div className="flex-1 flex flex-col items-center justify-center relative">
         {newCards.length === 0 ? (
           <div className="flex flex-col items-center gap-4 px-8 text-center">
-            <span className="text-6xl">🎉</span>
+            <div className="w-20 h-20 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-4xl">🎉</div>
             <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">Alle neuen Karten durch!</h2>
-            <p className="text-zinc-500 dark:text-zinc-400 text-sm">
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm max-w-xs">
               Geh zu „Wiederholen" oder „Kann ich", um dein Wissen zu festigen.
             </p>
             <button
               onClick={restartSession}
-              className="mt-2 px-6 py-3 rounded-2xl bg-blue-600 text-white font-semibold active:scale-95 transition-transform"
+              className="mt-2 px-6 py-3 rounded-2xl bg-blue-600 text-white font-semibold text-sm active:scale-95 transition-transform"
             >
-              Neue Runde
+              Neue Runde starten
             </button>
           </div>
         ) : sessionIndex >= newCards.length ? (
           <div className="flex flex-col items-center gap-4 px-8 text-center">
-            <span className="text-6xl">✅</span>
+            <div className="w-20 h-20 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-4xl">✅</div>
             <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">Session abgeschlossen!</h2>
             <p className="text-zinc-500 dark:text-zinc-400 text-sm">
               Du hast alle {newCards.length} Karten bearbeitet.
             </p>
             <button
               onClick={restartSession}
-              className="mt-2 px-6 py-3 rounded-2xl bg-blue-600 text-white font-semibold active:scale-95 transition-transform"
+              className="mt-2 px-6 py-3 rounded-2xl bg-blue-600 text-white font-semibold text-sm active:scale-95 transition-transform"
             >
               Nochmal
             </button>
@@ -128,7 +124,6 @@ export default function LernenPage() {
             showGermanFirst={showGermanFirst}
             onKnow={handleKnow}
             onLearn={handleLearn}
-            onSkip={advance}
             onFavorite={() => toggleFavorite(current.id)}
             isFavorite={current.favorite}
             current={sessionIndex + 1}

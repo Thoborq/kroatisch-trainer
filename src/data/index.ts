@@ -22,6 +22,9 @@ export { zahlenVocab } from './zahlen';
 export { koerperVocab } from './koerper';
 export { wetterVocab } from './wetter';
 export { verbenVocab } from './verben';
+export { fussballVocab } from './fussball';
+export { fitnessVocab } from './fitness';
+export { smalltalkVocab } from './smalltalk';
 
 import { familieVocab } from './familie';
 import { zeitVocab } from './zeit';
@@ -45,6 +48,9 @@ import { zahlenVocab } from './zahlen';
 import { koerperVocab } from './koerper';
 import { wetterVocab } from './wetter';
 import { verbenVocab } from './verben';
+import { fussballVocab } from './fussball';
+import { fitnessVocab } from './fitness';
+import { smalltalkVocab } from './smalltalk';
 
 export const allVocab: Vocabulary[] = [
   ...familieVocab,
@@ -69,4 +75,7 @@ export const allVocab: Vocabulary[] = [
   ...koerperVocab,
   ...wetterVocab,
   ...verbenVocab,
+  ...fussballVocab,
+  ...fitnessVocab,
+  ...smalltalkVocab,
 ];
